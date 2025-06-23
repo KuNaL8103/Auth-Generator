@@ -90,8 +90,7 @@ export default function Home() {
         </div>
         <p className="max-w-2xl text-muted-foreground">
           Instantly generate Better Auth integration code for your Godspeed
-          Framework application. Provide your configuration and let AI do the
-          rest.
+          Framework application. Provide your configuration.
         </p>
       </header>
 
