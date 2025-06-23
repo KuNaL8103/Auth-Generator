@@ -1,13 +1,5 @@
 'use server';
 
-/**
- * @fileOverview A flow to generate Godspeed API routes for authentication based on a Better Auth configuration.
- *
- * - generateApiRoutes - A function that generates the API routes.
- * - GenerateApiRoutesInput - The input type for the generateApiRoutes function.
- * - GenerateApiRoutesOutput - The return type for the generateApiRoutes function.
- */
-
 import {ai} from '../genkit';
 import {z} from 'genkit';
 
