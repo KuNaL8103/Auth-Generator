@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '../components/ui/button';
-import { Check, Copy } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { useState } from "react";
+import { Button } from "../components/ui/button";
+import { Check, Copy } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface CodeBlockProps {
   code: string;
@@ -16,7 +16,7 @@ export function CodeBlock({ code }: CodeBlockProps) {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(code);
     setHasCopied(true);
-    toast({ title: 'Copied to clipboard!' });
+    toast({ title: "Copied to clipboard!" });
     setTimeout(() => {
       setHasCopied(false);
     }, 2000);

@@ -1,29 +1,37 @@
-'use server';
+"use server";
 
-import {ai} from '../genkit';
-import {z} from 'genkit';
+import { ai } from "../genkit";
+import { z } from "genkit";
 
 const GenerateApiRoutesInputSchema = z.object({
   authConfig: z
     .string()
     .describe("A JSON string representing the Better Auth configuration."),
-  outputPath: z.string().describe('The file path where the generated code should be saved.'),
+  outputPath: z
+    .string()
+    .describe("The file path where the generated code should be saved."),
 });
-export type GenerateApiRoutesInput = z.infer<typeof GenerateApiRoutesInputSchema>;
+export type GenerateApiRoutesInput = z.infer<
+  typeof GenerateApiRoutesInputSchema
+>;
 
 const GenerateApiRoutesOutputSchema = z.object({
-  generatedCode: z.string().describe('The generated Godspeed API route code.'),
+  generatedCode: z.string().describe("The generated Godspeed API route code."),
 });
-export type GenerateApiRoutesOutput = z.infer<typeof GenerateApiRoutesOutputSchema>;
+export type GenerateApiRoutesOutput = z.infer<
+  typeof GenerateApiRoutesOutputSchema
+>;
 
-export async function generateApiRoutes(input: GenerateApiRoutesInput): Promise<GenerateApiRoutesOutput> {
+export async function generateApiRoutes(
+  input: GenerateApiRoutesInput
+): Promise<GenerateApiRoutesOutput> {
   return generateApiRoutesFlow(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'generateApiRoutesPrompt',
-  input: {schema: GenerateApiRoutesInputSchema},
-  output: {schema: GenerateApiRoutesOutputSchema},
+  name: "generateApiRoutesPrompt",
+  input: { schema: GenerateApiRoutesInputSchema },
+  output: { schema: GenerateApiRoutesOutputSchema },
   prompt: `You are an expert in integrating Better Auth with Godspeed Framework.
 
   Based on the provided Better Auth configuration, generate the Godspeed API routes.
@@ -56,12 +64,12 @@ const prompt = ai.definePrompt({
 
 const generateApiRoutesFlow = ai.defineFlow(
   {
-    name: 'generateApiRoutesFlow',
+    name: "generateApiRoutesFlow",
     inputSchema: GenerateApiRoutesInputSchema,
     outputSchema: GenerateApiRoutesOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
+  async (input) => {
+    const { output } = await prompt(input);
     return output!;
   }
 );

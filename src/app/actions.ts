@@ -1,27 +1,27 @@
-'use server';
+"use server";
 
 import {
-    generateApiRoutes,
-    type GenerateApiRoutesInput,
-  } from '../ai/flows/generate-api-routes';
+  generateApiRoutes,
+  type GenerateApiRoutesInput,
+} from "../ai/flows/generate-api-routes";
 import {
   suggestConfigImprovements,
   type SuggestConfigImprovementsInput,
-} from '../ai/flows/suggest-config-improvements';
+} from "../ai/flows/suggest-config-improvements";
 
 export async function handleGenerateRoutesAction(
   input: GenerateApiRoutesInput
 ): Promise<{ data?: string; error?: string }> {
   if (!input.authConfig) {
-    return { error: 'Configuration cannot be empty.' };
+    return { error: "Configuration cannot be empty." };
   }
   if (!input.outputPath) {
-    return { error: 'Output path cannot be empty.' };
+    return { error: "Output path cannot be empty." };
   }
   try {
     JSON.parse(input.authConfig);
   } catch (e) {
-    return { error: 'Invalid JSON format in configuration.' };
+    return { error: "Invalid JSON format in configuration." };
   }
 
   try {
@@ -32,7 +32,7 @@ export async function handleGenerateRoutesAction(
     return { data: result.generatedCode };
   } catch (error) {
     console.error(error);
-    return { error: 'Failed to generate API routes. Please try again.' };
+    return { error: "Failed to generate API routes. Please try again." };
   }
 }
 
@@ -40,12 +40,12 @@ export async function handleSuggestImprovementsAction(
   input: SuggestConfigImprovementsInput
 ): Promise<{ data?: string; error?: string }> {
   if (!input.config) {
-    return { error: 'Configuration cannot be empty.' };
+    return { error: "Configuration cannot be empty." };
   }
   try {
     JSON.parse(input.config);
   } catch (e) {
-    return { error: 'Invalid JSON format in configuration.' };
+    return { error: "Invalid JSON format in configuration." };
   }
 
   try {
@@ -53,6 +53,6 @@ export async function handleSuggestImprovementsAction(
     return { data: result.suggestions };
   } catch (error) {
     console.error(error);
-    return { error: 'Failed to analyze configuration. Please try again.' };
+    return { error: "Failed to analyze configuration. Please try again." };
   }
 }

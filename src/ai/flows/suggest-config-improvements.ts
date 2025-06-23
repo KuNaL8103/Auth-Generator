@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
-import {ai} from '@/ai/genkit'; 
-import {z} from 'genkit';
+import { ai } from "@/ai/genkit";
+import { z } from "genkit";
 
 const SuggestConfigImprovementsInputSchema = z.object({
   config: z
     .string()
-    .describe('The Better Auth configuration as a JSON string.'),
+    .describe("The Better Auth configuration as a JSON string."),
 });
 export type SuggestConfigImprovementsInput = z.infer<
   typeof SuggestConfigImprovementsInputSchema
@@ -15,7 +15,7 @@ export type SuggestConfigImprovementsInput = z.infer<
 const SuggestConfigImprovementsOutputSchema = z.object({
   suggestions: z
     .string()
-    .describe('Suggestions for improving the Better Auth configuration.'),
+    .describe("Suggestions for improving the Better Auth configuration."),
 });
 export type SuggestConfigImprovementsOutput = z.infer<
   typeof SuggestConfigImprovementsOutputSchema
@@ -28,9 +28,9 @@ export async function suggestConfigImprovements(
 }
 
 const prompt = ai.definePrompt({
-  name: 'suggestConfigImprovementsPrompt',
-  input: {schema: SuggestConfigImprovementsInputSchema},
-  output: {schema: SuggestConfigImprovementsOutputSchema},
+  name: "suggestConfigImprovementsPrompt",
+  input: { schema: SuggestConfigImprovementsInputSchema },
+  output: { schema: SuggestConfigImprovementsOutputSchema },
   prompt: `You are a security and performance expert specializing in the Godspeed Framework and its 'better-auth' library.
 Your task is to analyze the following 'better-auth' JSON configuration and provide actionable suggestions for improvement.
 
@@ -53,12 +53,12 @@ Your response must be a clear, helpful set of suggestions formatted as a single 
 
 const suggestConfigImprovementsFlow = ai.defineFlow(
   {
-    name: 'suggestConfigImprovementsFlow',
+    name: "suggestConfigImprovementsFlow",
     inputSchema: SuggestConfigImprovementsInputSchema,
     outputSchema: SuggestConfigImprovementsOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
+  async (input) => {
+    const { output } = await prompt(input);
     return output!;
   }
 );

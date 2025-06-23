@@ -1,26 +1,35 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Textarea } from '../components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
-import { FileCode, Lightbulb, Loader2, ShieldCheck, Wand2 } from 'lucide-react';
-import { handleGenerateRoutesAction, handleSuggestImprovementsAction } from './actions';
-import { CodeBlock } from '@/components/code-block';
+import { useState } from "react";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { FileCode, Lightbulb, Loader2, ShieldCheck, Wand2 } from "lucide-react";
+import {
+  handleGenerateRoutesAction,
+  handleSuggestImprovementsAction,
+} from "./actions";
+import { CodeBlock } from "@/components/code-block";
 
 const defaultConfig = JSON.stringify(
   {
-    providers: ['google', 'facebook', 'github'],
+    providers: ["google", "facebook", "github"],
     session: {
-      secret: 'your-super-secret-session-key',
+      secret: "your-super-secret-session-key",
       maxAge: 86400,
     },
     database: {
-      type: 'mongodb',
-      uri: 'mongodb://localhost:27017/better-auth-db',
+      type: "mongodb",
+      uri: "mongodb://localhost:27017/better-auth-db",
     },
   },
   null,
@@ -30,30 +39,30 @@ const defaultConfig = JSON.stringify(
 export default function Home() {
   const { toast } = useToast();
   const [config, setConfig] = useState(defaultConfig);
-  const [outputPath, setOutputPath] = useState('./auth.ts');
-  const [generatedCode, setGeneratedCode] = useState('');
-  const [suggestions, setSuggestions] = useState('');
+  const [outputPath, setOutputPath] = useState("./auth.ts");
+  const [generatedCode, setGeneratedCode] = useState("");
+  const [suggestions, setSuggestions] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleGenerate = async () => {
     setIsGenerating(true);
-    setGeneratedCode('');
+    setGeneratedCode("");
     const result = await handleGenerateRoutesAction({
       authConfig: config,
       outputPath: outputPath,
     });
     if (result.error) {
       toast({
-        variant: 'destructive',
-        title: 'Generation Failed',
+        variant: "destructive",
+        title: "Generation Failed",
         description: result.error,
       });
     } else {
-      setGeneratedCode(result.data || '');
+      setGeneratedCode(result.data || "");
       toast({
-        title: 'Success!',
-        description: 'API routes generated successfully.',
+        title: "Success!",
+        description: "API routes generated successfully.",
       });
     }
     setIsGenerating(false);
@@ -61,19 +70,19 @@ export default function Home() {
 
   const handleAnalyze = async () => {
     setIsAnalyzing(true);
-    setSuggestions('');
+    setSuggestions("");
     const result = await handleSuggestImprovementsAction({ config });
     if (result.error) {
       toast({
-        variant: 'destructive',
-        title: 'Analysis Failed',
+        variant: "destructive",
+        title: "Analysis Failed",
         description: result.error,
       });
     } else {
-      setSuggestions(result.data || '');
+      setSuggestions(result.data || "");
       toast({
-        title: 'Analysis Complete',
-        description: 'Configuration suggestions are ready.',
+        title: "Analysis Complete",
+        description: "Configuration suggestions are ready.",
       });
     }
     setIsAnalyzing(false);
@@ -123,7 +132,11 @@ export default function Home() {
               />
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button onClick={handleGenerate} disabled={isGenerating} className="flex-1">
+              <Button
+                onClick={handleGenerate}
+                disabled={isGenerating}
+                className="flex-1"
+              >
                 {isGenerating ? (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 ) : (
@@ -162,9 +175,9 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               {isGenerating ? (
-                 <div className="flex items-center justify-center h-48">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                 </div>
+                <div className="flex items-center justify-center h-48">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
               ) : generatedCode ? (
                 <CodeBlock code={generatedCode} />
               ) : (
@@ -186,12 +199,14 @@ export default function Home() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-               {isAnalyzing ? (
-                 <div className="flex items-center justify-center h-24">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                 </div>
+              {isAnalyzing ? (
+                <div className="flex items-center justify-center h-24">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
               ) : suggestions ? (
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{suggestions}</p>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                  {suggestions}
+                </p>
               ) : (
                 <div className="text-center text-sm text-muted-foreground py-10">
                   Click &quot;Analyze Config&quot; for improvement ideas.

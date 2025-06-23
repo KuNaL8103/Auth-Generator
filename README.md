@@ -4,8 +4,8 @@ This is a Next.js application that uses Google's Genkit to generate authenticati
 
 ### Prerequisites
 
-*   [Node.js](https://nodejs.org/en) (version 18 or later recommended)
-*   A Google AI API Key. You can get one from [Google AI Studio](https://aistudio.google.com/app/apikey).
+- [Node.js](https://nodejs.org/en) (version 18 or later recommended)
+- A Google AI API Key. You can get one from [Google AI Studio](https://aistudio.google.com/app/apikey).
 
 ### Step 1: Initialize a New Next.js App
 
@@ -38,6 +38,7 @@ This project uses ShadCN UI for its components. Run the `init` command to config
 ```bash
 npx shadcn@latest init
 ```
+
 This will create the `components.json` file and the `src/lib/utils.ts` file, and it will update `tailwind.config.ts` and `src/app/globals.css`.
 
 ### Step 4: Copy All Project Files
@@ -52,6 +53,7 @@ Now, copy all the files and folders from this project's `src` directory into you
     ```
     GOOGLE_API_KEY=YOUR_API_KEY_HERE
     ```
+
     _Note: The Genkit configuration in `src/ai/genkit.ts` automatically looks for this environment variable._
 
 ### Step 6: Run the Development Server
