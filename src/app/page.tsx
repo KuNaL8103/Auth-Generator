@@ -1,103 +1,207 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Textarea } from '../components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { FileCode, Lightbulb, Loader2, ShieldCheck, Wand2 } from 'lucide-react';
+import { handleGenerateRoutesAction, handleSuggestImprovementsAction } from './actions';
+import { CodeBlock } from '@/components/code-block';
+
+const defaultConfig = JSON.stringify(
+  {
+    providers: ['google', 'facebook', 'github'],
+    session: {
+      secret: 'your-super-secret-session-key',
+      maxAge: 86400,
+    },
+    database: {
+      type: 'mongodb',
+      uri: 'mongodb://localhost:27017/better-auth-db',
+    },
+  },
+  null,
+  2
+);
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const { toast } = useToast();
+  const [config, setConfig] = useState(defaultConfig);
+  const [outputPath, setOutputPath] = useState('./auth.ts');
+  const [generatedCode, setGeneratedCode] = useState('');
+  const [suggestions, setSuggestions] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleGenerate = async () => {
+    setIsGenerating(true);
+    setGeneratedCode('');
+    const result = await handleGenerateRoutesAction({
+      authConfig: config,
+      outputPath: outputPath,
+    });
+    if (result.error) {
+      toast({
+        variant: 'destructive',
+        title: 'Generation Failed',
+        description: result.error,
+      });
+    } else {
+      setGeneratedCode(result.data || '');
+      toast({
+        title: 'Success!',
+        description: 'API routes generated successfully.',
+      });
+    }
+    setIsGenerating(false);
+  };
+
+  const handleAnalyze = async () => {
+    setIsAnalyzing(true);
+    setSuggestions('');
+    const result = await handleSuggestImprovementsAction({ config });
+    if (result.error) {
+      toast({
+        variant: 'destructive',
+        title: 'Analysis Failed',
+        description: result.error,
+      });
+    } else {
+      setSuggestions(result.data || '');
+      toast({
+        title: 'Analysis Complete',
+        description: 'Configuration suggestions are ready.',
+      });
+    }
+    setIsAnalyzing(false);
+  };
+
+  return (
+    <div className="container mx-auto p-4 md:p-8">
+      <header className="flex flex-col items-center text-center mb-8">
+        <div className="flex items-center gap-3 mb-2">
+          <ShieldCheck className="h-10 w-10 text-primary" />
+          <h1 className="text-4xl font-bold tracking-tight font-headline">
+            Godspeed Auth Generator
+          </h1>
+        </div>
+        <p className="max-w-2xl text-muted-foreground">
+          Instantly generate Better Auth integration code for your Godspeed
+          Framework application. Provide your configuration and let AI do the
+          rest.
+        </p>
+      </header>
+
+      <main className="grid md:grid-cols-2 gap-8">
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle>Configuration</CardTitle>
+            <CardDescription>
+              Define your authentication methods and settings in JSON format.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="config-input">Better Auth Config (JSON)</Label>
+              <Textarea
+                id="config-input"
+                value={config}
+                onChange={(e) => setConfig(e.target.value)}
+                className="font-code h-72"
+                placeholder="Enter your Better Auth JSON config here..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="output-path">Output File Path</Label>
+              <Input
+                id="output-path"
+                value={outputPath}
+                onChange={(e) => setOutputPath(e.target.value)}
+                placeholder="e.g., src/routes/auth.ts"
+              />
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button onClick={handleGenerate} disabled={isGenerating} className="flex-1">
+                {isGenerating ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Wand2 className="mr-2 h-4 w-4" />
+                )}
+                Generate Routes
+              </Button>
+              <Button
+                onClick={handleAnalyze}
+                disabled={isAnalyzing}
+                variant="secondary"
+                className="flex-1"
+              >
+                {isAnalyzing ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Lightbulb className="mr-2 h-4 w-4" />
+                )}
+                Analyze Config
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="space-y-8">
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileCode className="text-primary" />
+                Generated API Routes
+              </CardTitle>
+              <CardDescription>
+                Your Godspeed API routes will appear here. Copy and add them to
+                your project.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isGenerating ? (
+                 <div className="flex items-center justify-center h-48">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                 </div>
+              ) : generatedCode ? (
+                <CodeBlock code={generatedCode} />
+              ) : (
+                <div className="text-center text-sm text-muted-foreground py-10">
+                  Click &quot;Generate Routes&quot; to see the magic happen.
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lightbulb className="text-primary" />
+                AI-Powered Suggestions
+              </CardTitle>
+              <CardDescription>
+                Get tips and best practices for improving your auth setup.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+               {isAnalyzing ? (
+                 <div className="flex items-center justify-center h-24">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                 </div>
+              ) : suggestions ? (
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap">{suggestions}</p>
+              ) : (
+                <div className="text-center text-sm text-muted-foreground py-10">
+                  Click &quot;Analyze Config&quot; for improvement ideas.
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
   );
 }
